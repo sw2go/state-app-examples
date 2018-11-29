@@ -1,11 +1,12 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
     "baseUrl": "",
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "mapRoot": "./",
     "module": "commonjs",
+    "watch": true,
     "moduleResolution": "node",
     "outDir": "./dist",
     "sourceMap": true,

@@ -51,23 +51,10 @@ export class Backend {
 
     this.http.get(`${this.url}/talks`, {search: params}).pipe(
       map(r => r.json())
-    ).subscribe( data => { console.log(data); 
-    
-
+    ).subscribe( data => {   
         this._talks = data.talks;
-        this._list = data.list;
-     
-    
-    
-    
-    
-    }   );
+        this._list = data.list;         
+    });
 
-
-
-    // this.http.get(`${this.url}/talks`, {search: params}).map(r => r.json()).forEach((data) => {
-    //   this._talks = data.talks;
-    //   this._list = data.list;
-    // });
   }
 }

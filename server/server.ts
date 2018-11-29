@@ -12,7 +12,7 @@ const _talks = [
     "id": 898,
     "title": "Are we there yet?",
     "speaker": "Rich Hickey",
-    "description": "In his keynote at JVM Languages Summit 2009, Rich Hickey advocated for the reexamination of basic principles like state, identity, value, time, types, genericity, complexity, as they are used by OOP today, to be able to create the new constructs and languages to deal with the massive parallelism and concurrency of the future.",
+    "description": "In xhis keynote at JVM Languages Summit 2009, Rich Hickey advocated for the reexamination of basic principles like state, identity, value, time, types, genericity, complexity, as they are used by OOP today, to be able to create the new constructs and languages to deal with the massive parallelism and concurrency of the future.",
     "yourRating": null,
     "rating": 9.1
   },
@@ -26,7 +26,7 @@ const _talks = [
   },
   {
     "id": 466,
-    "title": "Simple Made Easy",
+    "title": "Simples Made EasyXX",
     "speaker": "Rich Hickey",
     "description": "Rich Hickey emphasizes simplicity’s virtues over easiness’, showing that while many choose easiness they may end up with complexity, and the better way is to choose easiness along the simplicity path.",
     "yourRating": null,
@@ -58,6 +58,13 @@ router.get("/talks", (req, res) => {
 
   res.json({talks, list});
 });
+
+router.get("/hoi", (req, res) => {
+  const x = { "name": "Hampe"  };
+  res.json({x});
+});
+
+
 
 router.get("/talk", (req, res) => {
   const id = +req.query.id;
