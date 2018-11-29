@@ -1,7 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import {NgModule, Injectable} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule} from '@angular/material';
+import { MatCard, MatCheckbox, MatInputModule, MatRippleModule } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppCmp } from './app/app';
 import { TalksCmp } from './talks/talks';
@@ -27,13 +28,18 @@ import {WatchService} from "./watch";
     RateButtonCmp,
     FormatRatingPipe,
     FiltersCmp,
-    TalksAndFiltersCmp
+    TalksAndFiltersCmp,
+    MatCard,
+    MatCheckbox
   ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
     HttpModule,
-    MaterialModule.forRoot(),
+    MatInputModule,
+    MatRippleModule,
+    BrowserAnimationsModule,
+
     RouterModule.forRoot([
       { path: '',  pathMatch: 'full', redirectTo: 'talks'},
       { path: 'talks',  component: TalksAndFiltersCmp },

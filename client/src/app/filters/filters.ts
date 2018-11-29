@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Output, Inject, Input} from "@angular/core";
 import {FormGroup, FormControl} from "@angular/forms";
-import 'rxjs/add/operator/debounceTime';
+import { debounceTime, map } from 'rxjs/operators';
 
 @Component({
   selector: 'filters-cmp',
@@ -25,7 +25,7 @@ export class FiltersCmp {
   });
 
   constructor() {
-    this.filtersForm.valueChanges.debounceTime(200).subscribe((value) => {
+    this.filtersForm.valueChanges.pipe(debounceTime(200)).subscribe((value) => {
       const minRating = value.highRating ? 9 : 0;
       const filters = {speaker: value.speaker || null, title: value.title || null, minRating};
       this.filtersChange.next(filters);

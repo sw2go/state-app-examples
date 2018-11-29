@@ -1,8 +1,8 @@
 import {Http, URLSearchParams} from "@angular/http";
-import {Observable} from "rxjs";
-import {of} from "rxjs/observable/of";
+import {Observable, of} from "rxjs";
 import {Injectable} from "@angular/core";
 import {Filters, Talk} from "./model";
+import { map, take } from 'rxjs/operators';
 
 @Injectable()
 export class Backend {
@@ -22,16 +22,20 @@ export class Backend {
 
     const params = new URLSearchParams();
     params.set("id", id.toString());
-    return this.http.get(`${this.url}/talk/`, {search: params}).map(r => this._talks[id] = r.json()['talk']);
+
+    return this.http.get(`${this.url}/talk/`, {search: params}).pipe(
+      map( r => this._talks[id] = r.json()['talk'] )
+    )
   }
 
   rateTalk(id: number, rating: number): void {
     const talk = this._talks[id];
     talk.yourRating = rating;
-    this.http.post(`${this.url}/rate`, {id: talk.id, yourRating: rating}).catch((e:any) => {
+    
+    this.http.post(`${this.url}/rate`, {id: talk.id, yourRating: rating}).toPromise().catch((e:any) => {
       talk.yourRating = null;
       throw e;
-    }).forEach(() => {});
+    }).then(() => {});
   }
 
   changeFilters(filters: Filters): void {
@@ -44,9 +48,26 @@ export class Backend {
     params.set("speaker", this.filters.speaker);
     params.set("title", this.filters.title);
     params.set("minRating", this.filters.minRating.toString());
-    this.http.get(`${this.url}/talks`, {search: params}).map(r => r.json()).forEach((data) => {
-      this._talks = data.talks;
-      this._list = data.list;
-    });
+
+    this.http.get(`${this.url}/talks`, {search: params}).pipe(
+      map(r => r.json())
+    ).subscribe( data => { console.log(data); 
+    
+
+        this._talks = data.talks;
+        this._list = data.list;
+     
+    
+    
+    
+    
+    }   );
+
+
+
+    // this.http.get(`${this.url}/talks`, {search: params}).map(r => r.json()).forEach((data) => {
+    //   this._talks = data.talks;
+    //   this._list = data.list;
+    // });
   }
 }

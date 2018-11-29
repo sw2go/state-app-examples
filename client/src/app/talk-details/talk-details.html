@@ -1,4 +1,4 @@
-<md-card *ngIf="talk">
+<mat-card *ngIf="talk">
   <div id="rating-column">
     Rating
     <span id="rating">{{talk.rating | formatRating}}</span>
@@ -15,4 +15,4 @@
     <watch-button [talk]="talk" [watched]="watchService.isWatched(talk)" (watch)="handleWatch()"></watch-button>
     <rate-button [talk]="talk" (rate)="handleRate($event)"></rate-button>
   </div>
-</md-card>
+</mat-card>

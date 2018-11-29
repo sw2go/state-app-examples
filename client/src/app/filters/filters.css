@@ -9,10 +9,10 @@ div {
   flex-grow: 1;
 }
 
-md-input-container {
+mat-form-field {
   flex-grow: 1;
 }
 
-md-checkbox {
+mat-checkbox {
   flex-grow: 1;
 }
