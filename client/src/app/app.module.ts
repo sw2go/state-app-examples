@@ -11,12 +11,14 @@ import { WatchButtonCmp } from './watch-button/watch-button';
 import { RateButtonCmp } from './rate-button/rate-button';
 import { FormatRatingPipe } from './pipes/format-rating.pipe';
 import {Backend} from "./backend";
-import { FiltersCmp } from './filters/filters';
+import {FiltersCmp} from "./filters/filters";
 import {RouterModule} from "@angular/router";
 import {TalksAndFiltersCmp} from "./talks-and-filters/talks-and-filters";
 import {TalkDetailsCmp} from "./talk-details/talk-details";
 import {HttpModule} from "@angular/http";
 import {WatchService} from "./watch";
+import {Store, connectToStore, StoreAndRouterConnector} from "./store";
+import {reducer, initState} from "./model";
 
 @NgModule({
   declarations: [
@@ -35,21 +37,24 @@ import {WatchService} from "./watch";
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-    HttpModule,
-    MatInputModule,
-    MatRippleModule,
-    BrowserAnimationsModule,
-
-    RouterModule.forRoot([
-      { path: '',  pathMatch: 'full', redirectTo: 'talks'},
+      HttpModule,
+      MatInputModule,
+      MatRippleModule,
+      BrowserAnimationsModule,
+    MaterialModule.forRoot(),
+    RouterModule.forRoot(connectToStore([
+      { path: '', pathMatch: 'full', redirectTo: 'talks' },
       { path: 'talks',  component: TalksAndFiltersCmp },
       { path: 'talk/:id', component: TalkDetailsCmp }
-    ], {useHash: true}),
+    ]), {useHash: true}),
   ],
   providers: [
     Backend,
-    WatchService
+    WatchService,
+    { provide: Store, useFactory: (backend, watch) => new Store(reducer(backend, watch), initState), deps: [Backend, WatchService] },
+    StoreAndRouterConnector
   ],
   bootstrap: [AppCmp]
 })
 export class AppModule { }
+

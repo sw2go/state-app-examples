@@ -7,19 +7,18 @@ import { map, take } from 'rxjs/operators';
 @Injectable()
 export class Backend {
   private url = 'http://localhost:4444';
-  _talks: {[n:number]: Talk} = {};
-  _list: number[] = [];
-  filters: Filters = {speaker: null, title: null, minRating: 0};
 
   constructor(private http: Http) {}
 
-  get talks(): Talk[] {
-    return this._list.map(n => this._talks[n]);
+  findTalks(filters: Filters): Observable<{talks: {[id:number]: Talk}, list: number[]}> {
+    const params = new URLSearchParams();
+    params.set("speaker", filters.speaker);
+    params.set("title", filters.title);
+    params.set("minRating", filters.minRating.toString());
+    return this.http.get(`${this.url}/talks`, {search: params}).map(r => r.json());
   }
 
   findTalk(id: number): Observable<Talk> {
-    if (this._talks[id]) return of(this._talks[id]);
-
     const params = new URLSearchParams();
     params.set("id", id.toString());
 
@@ -28,33 +27,7 @@ export class Backend {
     )
   }
 
-  rateTalk(id: number, rating: number): void {
-    const talk = this._talks[id];
-    talk.yourRating = rating;
-    
-    this.http.post(`${this.url}/rate`, {id: talk.id, yourRating: rating}).toPromise().catch((e:any) => {
-      talk.yourRating = null;
-      throw e;
-    }).then(() => {});
-  }
-
-  changeFilters(filters: Filters): void {
-    this.filters = filters;
-    this.refetch();
-  }
-
-  private refetch(): void {
-    const params = new URLSearchParams();
-    params.set("speaker", this.filters.speaker);
-    params.set("title", this.filters.title);
-    params.set("minRating", this.filters.minRating.toString());
-
-    this.http.get(`${this.url}/talks`, {search: params}).pipe(
-      map(r => r.json())
-    ).subscribe( data => {   
-        this._talks = data.talks;
-        this._list = data.list;         
-    });
-
+  rateTalk(id: number, rating: number): Observable<any> {
+    return this.http.post(`${this.url}/rate`, {id, yourRating: rating});
   }
 }
