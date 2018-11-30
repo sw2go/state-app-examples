@@ -1,7 +1,8 @@
-import {Observable, Subject, Observer, Scheduler} from "rxjs";
-import {of} from "rxjs/observable/of";
+import {Observable, Subject, Observer} from "rxjs";
+import {of, asyncScheduler } from "rxjs";
 import {RouterStateSnapshot, CanActivateChild, ActivatedRouteSnapshot, Routes} from "@angular/router";
 import {Injectable} from "@angular/core";
+import { map, mergeMap, observeOn } from 'rxjs/operators';
 
 export type RollbackFunction<S, A> = (currentState: S, oldState: S, action: A) => S;
 export type Reducer<S, A> = (store: Store<S,A>, state: S, action: A) => S|Observable<S>;
@@ -13,11 +14,11 @@ export class Store<S, A> {
   private actions = new Subject<{action: A, result: Observer<boolean>}>();
 
   constructor(private reducer: Reducer<S, A>, public state: S) {
-    this.actions.observeOn(Scheduler.async).mergeMap(a => {
+    this.actions.pipe(observeOn(asyncScheduler), mergeMap(a => {
       const state = reducer(this, this.state, a.action);
       const obs = state instanceof Observable ? state : of(state);
-      return obs.map(state => ({state, result: a.result}));
-    }).subscribe(pair => {
+      return obs.pipe(map(state => ({state, result: a.result})));
+    }) )  .subscribe(pair => {
       this.state = pair.state;
       pair.result.next(true);
       pair.result.complete();

@@ -37,11 +37,10 @@ import {reducer, initState} from "./model";
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-      HttpModule,
-      MatInputModule,
-      MatRippleModule,
-      BrowserAnimationsModule,
-    MaterialModule.forRoot(),
+    HttpModule,
+    MatInputModule,
+    MatRippleModule,
+    BrowserAnimationsModule,
     RouterModule.forRoot(connectToStore([
       { path: '', pathMatch: 'full', redirectTo: 'talks' },
       { path: 'talks',  component: TalksAndFiltersCmp },

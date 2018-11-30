@@ -3,6 +3,7 @@ import {Backend} from "./backend";
 import {Observable} from "rxjs";
 import {RouterNavigation, Reducer, Store} from "./store";
 import {Params} from "@angular/router";
+import { map } from 'rxjs/operators';
 
 
 export type Talk = { id: number, title: string, speaker: string, description: string, yourRating: number, rating: number };
@@ -24,12 +25,12 @@ export function reducer(backend: Backend, watch: WatchService): Reducer<State, A
 
         if (route.routeConfig.path === "talks") {
           const filters =  createFilters(route.params);
-          return backend.findTalks(filters).map(r => ({...state, ...r, filters}));
+          return backend.findTalks(filters).pipe(map(r => ({...state, ...r, filters})));
 
         } else if (route.routeConfig.path  === "talk/:id") {
           const id = +route.params['id'];
           if (state.talks[id]) return state;
-          return backend.findTalk(id).map(t => ({...state, talks: {...state.talks, [t.id]: t}}));
+          return backend.findTalk(id).pipe(map(t => ({...state, talks: {...state.talks, [t.id]: t}})));
 
         } else {
           return state;
@@ -42,10 +43,10 @@ export function reducer(backend: Backend, watch: WatchService): Reducer<State, A
         return {...state, watched: updatedWatched};
 
       case 'RATE':
-        backend.rateTalk(action.talkId, action.rating).catch(e =>
-          store.sendAction({type: 'UNRATE', talkId: action.talkId, error: e})
-        ).forEach(() => {});
-
+        backend.rateTalk(action.talkId, action.rating).subscribe(
+          n => {}, 
+          (e) => store.sendAction({type: 'UNRATE', talkId: action.talkId, error: e}) 
+        );        
         const talkToRate = state.talks[action.talkId];
         const ratedTalk = {...talkToRate, yourRating: action.rating};
         const updatedTalks = {...state.talks, [action.talkId]: ratedTalk};
