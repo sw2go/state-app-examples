@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 
 export type Talk = { id: number, title: string, speaker: string, description: string, yourRating: number, rating: number };
 export type Filters = { speaker: string, title: string, minRating: number };
-export type State = { talks: { [id: number]: Talk }, list: number[], filters: Filters, watched: { [id: number]: boolean } };
+export type State = { talks: { [gaggi: number]: Talk }, list: number[], filters: Filters, watched: { [id: number]: boolean } };
 
 export type Watch = { type: 'WATCH', talkId: number };
 export type Rate = { type: 'RATE', talkId: number, rating: number };
@@ -17,32 +17,39 @@ export type Action = RouterNavigation | Watch | Rate | Unrate;
 
 export const initState: State = {talks: {}, list: [], filters: {speaker: null, title: null, minRating: 0}, watched: {}};
 
+
+
+
+
+
+
 export function reducer(backend: Backend, watch: WatchService): Reducer<State, Action> {
   return (store: Store<State, Action>, state: State, action: Action): State|Observable<State> => {
     switch (action.type) {
-      case 'ROUTER_NAVIGATION':
-        const route = action.state.root.firstChild.firstChild;
-
+      case 'ROUTER_NAVIGATION':       
+        const route = action.state.root.firstChild.firstChild;        
+        console.log("reducer: ROUTER_NAVIGATION(" + route.routeConfig.path + ")");
+        
         if (route.routeConfig.path === "talks") {
           const filters =  createFilters(route.params);
           return backend.findTalks(filters).pipe(map(r => ({...state, ...r, filters})));
-
         } else if (route.routeConfig.path  === "talk/:id") {
           const id = +route.params['id'];
           if (state.talks[id]) return state;
           return backend.findTalk(id).pipe(map(t => ({...state, talks: {...state.talks, [t.id]: t}})));
-
         } else {
           return state;
         }
 
       case 'WATCH':
+        console.log("reducer: WATCH");
         const talkToWatch = state.talks[action.talkId];
         watch.watch(talkToWatch);
         const updatedWatched = {...state.watched, [action.talkId]: true};
         return {...state, watched: updatedWatched};
 
       case 'RATE':
+        console.log("reducer: RATE");
         backend.rateTalk(action.talkId, action.rating).subscribe(
           n => {}, 
           (e) => store.sendAction({type: 'UNRATE', talkId: action.talkId, error: e}) 
@@ -53,12 +60,14 @@ export function reducer(backend: Backend, watch: WatchService): Reducer<State, A
         return {...state, talks: updatedTalks};
 
       case 'UNRATE':
+        console.log("reducer: UNRATE");
         const talkToUnrate = state.talks[action.talkId];
         const unratedTalk = {...talkToUnrate, yourRating: null};
         const updatedTalksAfterUnrating = {...state.talks, [action.talkId]: unratedTalk };
         return {...state, talks: updatedTalksAfterUnrating};
 
       default:
+        console.log("reducer: DEFAULT");
         return state;
     }
   }

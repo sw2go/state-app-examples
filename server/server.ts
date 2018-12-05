@@ -26,7 +26,7 @@ const _talks = [
   },
   {
     "id": 466,
-    "title": "Simples Made EasyXX",
+    "title": "Simples Made Easy",
     "speaker": "Rich Hickey",
     "description": "Rich Hickey emphasizes simplicity’s virtues over easiness’, showing that while many choose easiness they may end up with complexity, and the better way is to choose easiness along the simplicity path.",
     "yourRating": null,
@@ -50,11 +50,11 @@ router.get("/talks", (req, res) => {
     const titlePass = filters.title ? t.title.indexOf(filters.title) > -1 : true;
     const speakerPass = filters.speaker ? t.speaker.indexOf(filters.speaker) > -1 : true;
     const ratingPass = filters.minRating ? t.rating >= filters.minRating : true;
-    return titlePass && speakerPass && ratingPass;
+    return titlePass  && speakerPass && ratingPass;
   });
 
   const talks = filteredTalks.reduce((acc, t) => (acc[t.id] = t, acc), {});
-  const list = filteredTalks.map(t => t.id);
+  const list =  filteredTalks.map(t => t.id);
 
   res.json({talks, list});
 });
@@ -63,8 +63,6 @@ router.get("/hoi", (req, res) => {
   const x = { "name": "Hampe"  };
   res.json({x});
 });
-
-
 
 router.get("/talk", (req, res) => {
   const id = +req.query.id;

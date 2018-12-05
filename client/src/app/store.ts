@@ -15,11 +15,17 @@ export class Store<S, A> {
 
   constructor(private reducer: Reducer<S, A>, public state: S) {
     this.actions.pipe(observeOn(asyncScheduler), mergeMap(a => {
+      console.log("store: before state");
       const state = reducer(this, this.state, a.action);
+
       const obs = state instanceof Observable ? state : of(state);
       return obs.pipe(map(state => ({state, result: a.result})));
     }) )  .subscribe(pair => {
+      console.log(this.state);
       this.state = pair.state;
+      console.log(this.state);
+
+
       pair.result.next(true);
       pair.result.complete();
     });
@@ -27,7 +33,9 @@ export class Store<S, A> {
 
   sendAction(action: A): Observable<boolean> {
     const res = new Subject<boolean>();
+    console.log("store: before sendAction");
     this.actions.next({action, result: res});
+    console.log("store: after sendAction");
     return res;
   }
 }
@@ -38,6 +46,7 @@ export class StoreAndRouterConnector implements CanActivateChild {
   constructor(private store: Store<any, any>) {}
 
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    console.log("canActivateChild");
     if (this.lastState === state) {
       return of(true);
     } else {

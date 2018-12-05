@@ -6,7 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
-    "watch": true,
+    "watch": false,
     "moduleResolution": "node",
     "outDir": "./dist",
     "sourceMap": true,
